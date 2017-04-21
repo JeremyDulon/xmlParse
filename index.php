@@ -135,13 +135,17 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                     <div class="form-group col-xs-3">
                         <select class="form-control" id="com" name="com" disabled="disabled">
                             <option id="commune_default">Choisir une région</option>
-                            <!--                    --><?php //foreach ($geoData['communes'] as $commune) {$label = $commune['label'];echo "<option>$label</option>";} ?>
+<!--                                                --><?php //foreach ($geoData['communes'] as $commune) {$label = $commune['label'];echo "<option>$label</option>";} ?>
                         </select>
                     </div>
-                    <div class="col-xs-1">
-                        <button type="button" class="btn btn-primary" id="btnRecherche">Rechercher</button>
-                    </div>
                 </form>
+            </div>
+
+            <div id="more-info" class="col-xs-12" style="margin-left:15px;">
+                <span>Nombre d'inscrits : </span><span id="insc"></span><br>
+                <span>Nombre de votes exprimés : </span><span id="votes"></span><br>
+                <span>Taux d'abstention : </span><span id="abst"></span><br>
+                <span>Votes nuls ou votes blancs : </span><span id="nuls"></span><br>
             </div>
 
             <div class="col-xs-12" style="margin-top:20px;margin-bottom:20px;">
@@ -294,6 +298,9 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                             var xmlDoc = $.parseXML(data);
                             var xml = $(xmlDoc);
                             var pieValues = [xml.find("Abstentions").find("Nombre").text(), xml.find("Blancs").find("Nombre").text(), xml.find("Nuls").find("Nombre").text(), xml.find("Exprimes").find("Nombre").text()];
+
+                            getGeneralStats(xml);
+
                             var myDoughnut = new Chart(context, {
                                 type: 'pie',
                                 data: {
@@ -349,6 +356,9 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                                 var xmlDoc = $.parseXML(data);
                                 var xml = $(xmlDoc);
                                 var pieValues = [xml.find("Abstentions").find("Nombre").text(), xml.find("Blancs").find("Nombre").text(), xml.find("Nuls").find("Nombre").text(), xml.find("Exprimes").find("Nombre").text()];
+
+                                getGeneralStats(xml);
+                                
                                 var myDoughnut = new Chart(context, {
                                     type: 'pie',
                                     data: {
@@ -405,6 +415,9 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                                     var xmlDoc = $.parseXML(data);
                                     var xml = $(xmlDoc);
                                     var pieValues = [xml.find("Abstentions").find("Nombre").text(), xml.find("Blancs").find("Nombre").text(), xml.find("Nuls").find("Nombre").text(), xml.find("Exprimes").find("Nombre").text()];
+
+                                    getGeneralStats(xml);
+
                                     var myDoughnut = new Chart(context, {
                                         type: 'pie',
                                         data: {
@@ -460,6 +473,9 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                                     var xmlDoc = $.parseXML(data);
                                     var xml = $(xmlDoc);
                                     var pieValues = [xml.find("Abstentions").find("Nombre").text(), xml.find("Blancs").find("Nombre").text(), xml.find("Nuls").find("Nombre").text(), xml.find("Exprimes").find("Nombre").text()];
+
+                                    getGeneralStats(xml);
+
                                     var myDoughnut = new Chart(context, {
                                         type: 'pie',
                                         data: {
@@ -503,6 +519,25 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                                 }
                             });
                         }
+                    }
+                }
+
+                function getGeneralStats(xml) {
+                    var inscrits = parseInt(xml.find("Inscrits").find("Nombre").text());
+                    $('#insc').html(inscrits);
+
+                    var votants = parseInt(xml.find("Exprimes").find("Nombre").text());
+                    $('#votes').html(getVotePercent(votants, inscrits));
+
+                    var nuls = parseInt(xml.find("Nuls").find("Nombre").text()) + parseInt(xml.find("Blancs").find("Nombre").text());
+                    $('#nuls').html(getVotePercent(nuls, inscrits));
+
+                    var abst = parseInt(xml.find("Abstentions").find("Nombre").text());
+                    $('#abst').html(getVotePercent(abst, inscrits));
+
+                    function getVotePercent(vote, inscrits) {
+                        var result = vote + ' (<em>' + Math.round(vote/inscrits*100,2) + '%</em>)';
+                        return result;
                     }
                 }
             }
