@@ -184,6 +184,21 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="modalNoData" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Impossible de trouver les informations</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Les données pour cette zone géographique n'ont pas encore été publiées</p>
+                    </div>
+                </div>
+            </div>
+        </div>
         <script>
             $(document).ready( function () {
                 var regions = <?php print_r(json_encode($geoData['regions'])); ?>;
@@ -237,24 +252,24 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                 });
 
                 $('#btnFE').on('click', function () {
-                    $('#reg option[selected="selected"]').each(
-                        function() {
-                            $(this).removeAttr('selected');
-                        }
-                    );
-                    $('#reg option:first').attr('selected','selected');
-                    $('#dpt option[selected="selected"]').each(
-                        function() {
-                            $(this).removeAttr('selected');
-                        }
-                    );
-                    $('#dpt option:first').attr('selected','selected');
                     $('#com option[selected="selected"]').each(
                         function() {
                             $(this).removeAttr('selected');
                         }
                     );
                     $('#com option:first').attr('selected','selected');
+                    $('#dpt option[selected="selected"]').each(
+                        function() {
+                            $(this).removeAttr('selected');
+                        }
+                    );
+                    $('#dpt option:first').attr('selected','selected');
+                    $('#reg option[selected="selected"]').each(
+                        function() {
+                            $(this).removeAttr('selected');
+                        }
+                    );
+                    $('#reg option:first').attr('selected','selected');
                     $('#reg').prop('disabled',false);
                     $('#dpt').prop('disabled',true);
                     $('#com').prop('disabled',true);
@@ -280,8 +295,10 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
             });
             var baseUrlForT1 = 'http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT1/';
             var baseUrlForT2 = 'http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT2/';
+            var timeOutId = null;
         </script>
         <script>
+<<<<<<< HEAD
             var getAndDisplay = function(origin) {
                 $('#pieChartContainer').empty();
                 $('#pieChartContainer').html('<canvas id="pieChart"></canvas>');
@@ -316,22 +333,24 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                 var today = new Date();
                 var dateSecondTour = new Date("2017-05-07");
                 var baseUrl = dateSecondTour < today ? baseUrlForT2 : baseUrlForT1;
+=======
+            var changeData = function(url) {
+>>>>>>> b4feeb0af2128ad53cba46649ab4960f03cd2b5c
                 var context = document.getElementById("pieChart").getContext('2d');
                 var pieLabels = ["Abstentions", "Blancs", "Nuls", "Exprimés"];
                 var couleursMentions = ["#f14d35", "#67b64d", "#ffd036", "#0075b3"];
                 var ctxt = document.getElementById("barChart").getContext('2d');
                 var couleursCandidats = ["#67b64d","#f14d35","#553c86","#0075b3","#f66b2d","#219d97","#f12736","#1b4e92","#ffd036","#a6336e","#99a83e"];
-                $("#resultatsTBody").empty();
-                if (reg_id == "reg_default"){
-                    $.ajax({
-                        type: "POST",
-                        url: 'ajax.php',
-                        data: {
-                            'action': 'getInfos',
-                            'url': baseUrl + "FE.xml"
-                        },
-                        success: function(data) {
-                            var xmlDoc = $.parseXML(data);
+                $.ajax({
+                    type: "POST",
+                    url: 'ajax.php',
+                    data: {
+                        'action': 'getInfos',
+                        'url': url
+                    },
+                    success: function(data) {
+                        var xmlDoc = $.parseXML(data);
+                        if (xmlDoc != null && xmlDoc != undefined) {
                             var xml = $(xmlDoc);
                             var pieValues = [xml.find("Abstentions").find("Nombre").text(), xml.find("Blancs").find("Nombre").text(), xml.find("Nuls").find("Nombre").text(), xml.find("Exprimes").find("Nombre").text()];
 
@@ -378,9 +397,35 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                                 }
                             });
                         }
-                    });
+                        else {
+                            $("#modalNoData").modal("show");
+                        }
+                        timeOutId = setTimeout(getAndDisplay, 300000);
+                    },
+                    error: function(err) {
+                        $("#modalNoData").modal("show");
+                        timeOutId = setTimeout(getAndDisplay, 300000);
+                    }
+                });
+            }
+            var getAndDisplay = function() {
+                clearTimeout(timeOutId);
+                $('#pieChartContainer').empty();
+                $('#pieChartContainer').html('<canvas id="pieChart"></canvas>');
+                $('#barChartContainer').empty();
+                $('#barChartContainer').html('<canvas id="barChart"></canvas>');
+                var reg_id = $('#reg').find(":selected").attr("id");
+                var dpt_id = $('#dpt').find(":selected").attr("id");
+                var com_id = $('#com').find(":selected").attr("id");
+                var today = new Date();
+                var dateSecondTour = new Date("2017-05-07");
+                var baseUrl = dateSecondTour < today ? baseUrlForT2 : baseUrlForT1;
+                $("#resultatsTBody").empty();
+                if (reg_id == "reg_default"){
+                    changeData(baseUrl + "FE.xml");
                 } else {
                     if (dpt_id == "dpt_default") {
+<<<<<<< HEAD
                         $.ajax({
                             type: "POST",
                             url: 'ajax.php',
@@ -554,6 +599,16 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                                     });
                                 }
                             });
+=======
+                        changeData(baseUrl + reg_id.substr(4) + "/" + reg_id.substr(4) + ".xml");
+                    }
+                    else {
+                        if (com_id == "commune_default") {
+                            changeData(baseUrl + reg_id.substr(4) + "/" + dpt_id.substr(4) + "/" + dpt_id.substr(4) + ".xml");
+                        }
+                        else {
+                            changeData(baseUrl + reg_id.substr(4) + "/" + dpt_id.substr(4) + "/" + com_id.substr(4) + ".xml");
+>>>>>>> b4feeb0af2128ad53cba46649ab4960f03cd2b5c
                         }
                     }
                 }
