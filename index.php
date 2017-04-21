@@ -92,7 +92,8 @@ if(isset($_GET) && !empty($_GET)) {
     $geoData = search();
 }
 
-$data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT1/032/002/002001.xml');
+$data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT1/FE.xml');
+
 ?>
 
 <html>
@@ -286,6 +287,8 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
 
                 getAndDisplay('base');
             });
+            var config = $.getJSON('config.json');
+            console.log(config);
             var baseUrlForT1 = 'http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT1/';
             var baseUrlForT2 = 'http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT2/';
             var timeOutId = null;
