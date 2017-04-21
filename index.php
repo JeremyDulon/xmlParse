@@ -290,7 +290,9 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
             var config = $.getJSON('config.json');
             console.log(config);
             var baseUrlForT1 = 'http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT1/';
+            //var baseUrlForT1 = 'http://elections.interieur.gouv.fr/telechargements/PR2017/resultatsT1/';
             var baseUrlForT2 = 'http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT2/';
+            //var baseUrlForT2 = 'http://elections.interieur.gouv.fr/telechargements/PR2017/resultatsT2/';
             var timeOutId = null;
             var theDataTable = null;
         </script>
@@ -300,7 +302,7 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                 var pieLabels = ["Abstentions", "Blancs", "Nuls", "Exprimés"];
                 var couleursMentions = ["#f14d35", "#67b64d", "#ffd036", "#0075b3"];
                 var ctxt = document.getElementById("barChart").getContext('2d');
-                var couleursCandidats = ["#67b64d","#f14d35","#553c86","#0075b3","#f66b2d","#219d97","#f12736","#1b4e92","#ffd036","#a6336e","#99a83e"];
+                var couleursCandidats = ["#a6336e","#1b4e92","#f14d35","#67b64d","#ffd036","#99a83e","#f66b2d","#219d97","#f12736","#553c86","#0075b3"];
                 $.ajax({
                     type: "POST",
                     url: 'ajax.php',
