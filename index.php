@@ -102,16 +102,18 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
+        <link rel="stylesheet" href="//cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
         <!-- Optional theme -->
 <!--        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">-->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
         <!-- Latest compiled and minified JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
+        <script src="//cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
     </head>
     <body>
         <div class="container">
-            <h1 class="page-header"><?php echo $data['title'] ?> - </h1>
+            <h1 class="page-header"><?php echo $data['title'] ?></h1><h1 id="header-location"></h1>
 
             <div class="col-xs-12">
                 <form id="search-form" action="">
@@ -167,7 +169,7 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
 
                     <!-- Table -->
                     <div class="panel-body">
-                        <table class="table">
+                        <table class="table" id="result-table">
                             <thead>
                                 <tr>
                                     <th>Nom du candidat</th>
@@ -176,11 +178,6 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                                 </tr>
                             </thead>
                             <tbody id="resultatsTBody">
-                                <tr>
-                                    <td>Jean Roger</td>
-                                    <td>12,2%</td>
-                                    <td>546654</td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -191,7 +188,7 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
             $(document).ready( function () {
                 var regions = <?php print_r(json_encode($geoData['regions'])); ?>;
                 $('#reg').on('change', function () {
-                    getAndDisplay();
+                    getAndDisplay('reg');
                     var id = $(this).find(':selected').attr('id').substr(4);
                     $('#dpt').empty();
                     $('#com').empty();
@@ -219,7 +216,7 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                 });
 
                 $('#dpt').on('change', function () {
-                    getAndDisplay();
+                    getAndDisplay('dpt');
                     var id = $(this).find(':selected').attr('id').substr(4);
                     $('#com').empty();
                     var opt = "<option id='commune_default'>Choisir une commune</option>";
@@ -269,23 +266,53 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                 });
 
                 $('#com').on('change', function () {
-                    getAndDisplay();
+                    getAndDisplay('com');
                 });
 
-                getAndDisplay();
+                getAndDisplay('base');
+                
+                $('#result-table').DataTable({
+                    "paging": false,
+                    "language" : {
+                        "url" : "//cdn.datatables.net/plug-ins/1.10.15/i18n/French.json"
+                    }
+                });
             });
             var baseUrlForT1 = 'http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT1/';
             var baseUrlForT2 = 'http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT2/';
         </script>
         <script>
-            var getAndDisplay = function() {
+            var getAndDisplay = function(origin) {
                 $('#pieChartContainer').empty();
                 $('#pieChartContainer').html('<canvas id="pieChart"></canvas>');
                 $('#barChartContainer').empty();
                 $('#barChartContainer').html('<canvas id="barChart"></canvas>');
-                var reg_id = $('#reg').find(":selected").attr("id");
-                var dpt_id = $('#dpt').find(":selected").attr("id");
-                var com_id = $('#com').find(":selected").attr("id");
+
+                var reg_id, dpt_id, com_id;
+
+                switch (origin) {
+                    case 'reg':
+                        reg_id = $('#reg').find(":selected").attr("id");
+                        dpt_id = 'dpt_default';
+                        com_id = 'commune_default';
+                        break;
+                    case 'dpt':
+                        reg_id = $('#reg').find(":selected").attr("id");
+                        dpt_id = $('#dpt').find(":selected").attr("id");
+                        com_id = 'commune_default';
+                        break;
+                    case 'com':
+                        reg_id = $('#reg').find(":selected").attr("id");
+                        dpt_id = $('#dpt').find(":selected").attr("id");
+                        com_id = $('#com').find(":selected").attr("id");
+                        break;
+                    case 'base':
+                        reg_id = 'reg_default';
+                        dpt_id = 'dpt_default';
+                        com_id = 'commune_default';
+                        break;
+                }
+
                 var today = new Date();
                 var dateSecondTour = new Date("2017-05-07");
                 var baseUrl = dateSecondTour < today ? baseUrlForT2 : baseUrlForT1;
