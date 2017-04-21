@@ -71,6 +71,8 @@ function search($keyword = null) {
 
     $geoData['result'] = $result;
 
+    $geoData['title'] = 'Résultats de la ' . $xml->Scrutin->Type->__toString() . ' ' . $xml->Scrutin->Annee->__toString();
+
     return $geoData;
 }
 
@@ -92,10 +94,11 @@ if(isset($_GET) && !empty($_GET)) {
     $geoData = search();
 }
 
-$data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT1/FE.xml');
+$string = file_get_contents("config.json");
+$config = json_decode($string, true);
+$data = $geoData;
 
 ?>
-
 <html>
     <head>
         <title><?php echo $data['title'] ?></title>
@@ -110,6 +113,7 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
         <!-- Latest compiled and minified JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
+        <script src="//cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
         <script src="//cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
     </head>
     <body>
@@ -287,12 +291,8 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
 
                 getAndDisplay('base');
             });
-            var config = $.getJSON('config.json');
-            console.log(config);
-            var baseUrlForT1 = 'http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT1/';
-            //var baseUrlForT1 = 'http://elections.interieur.gouv.fr/telechargements/PR2017/resultatsT1/';
-            var baseUrlForT2 = 'http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT2/';
-            //var baseUrlForT2 = 'http://elections.interieur.gouv.fr/telechargements/PR2017/resultatsT2/';
+            var baseUrlForT1 = '<?php echo $config['baseUrlT1']; ?>';
+            var baseUrlForT2 = '<?php echo $config['baseUrlT2']; ?>';
             var timeOutId = null;
             var theDataTable = null;
         </script>

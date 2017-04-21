@@ -1,4 +1,4 @@
 {
-  "baseUrlT1": "http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT1/",
-  "baseUrlT2": "http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT2/"
+  "baseUrlT1": "http://elections.interieur.gouv.fr/telechargements/PR2017/resultatsT1/",
+  "baseUrlT2": "http://elections.interieur.gouv.fr/telechargements/PR2017/resultatsT2/"
 }
