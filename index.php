@@ -289,6 +289,7 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
             var baseUrlForT1 = 'http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT1/';
             var baseUrlForT2 = 'http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT2/';
             var timeOutId = null;
+            var theDataTable = null;
         </script>
         <script>
             var changeData = function(url) {
@@ -353,12 +354,14 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                                 }
                             });
 
-                            $('table').DataTable({
-                                "paging": false,
-                                "language" : {
-                                    "url" : "//cdn.datatables.net/plug-ins/1.10.15/i18n/French.json"
-                                }
-                            });
+                            if (theDataTable == null) {
+                                theDataTable = $('table').DataTable({
+                                    "paging": false,
+                                    "language" : {
+                                        "url" : "//cdn.datatables.net/plug-ins/1.10.15/i18n/French.json"
+                                    }
+                                });
+                            }
                         }
                         else {
                             $("#modalNoData").modal("show");
@@ -373,6 +376,10 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
             }
             var getAndDisplay = function() {
                 clearTimeout(timeOutId);
+                if (theDataTable != null){
+                    theDataTable.clear();
+                }
+                $("#resultatsTBody").empty();
                 $('#pieChartContainer').empty();
                 $('#pieChartContainer').html('<canvas id="pieChart"></canvas>');
                 $('#barChartContainer').empty();
@@ -383,7 +390,6 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                 var today = new Date();
                 var dateSecondTour = new Date("2017-05-07");
                 var baseUrl = dateSecondTour < today ? baseUrlForT2 : baseUrlForT1;
-                $("#resultatsTBody").empty();
                 if (reg_id == "reg_default"){
                     changeData(baseUrl + "FE.xml");
                 } else {
