@@ -285,57 +285,13 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                 });
 
                 getAndDisplay('base');
-                
-                $('#result-table').DataTable({
-                    "paging": false,
-                    "language" : {
-                        "url" : "//cdn.datatables.net/plug-ins/1.10.15/i18n/French.json"
-                    }
-                });
             });
             var baseUrlForT1 = 'http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT1/';
             var baseUrlForT2 = 'http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT2/';
             var timeOutId = null;
         </script>
         <script>
-<<<<<<< HEAD
-            var getAndDisplay = function(origin) {
-                $('#pieChartContainer').empty();
-                $('#pieChartContainer').html('<canvas id="pieChart"></canvas>');
-                $('#barChartContainer').empty();
-                $('#barChartContainer').html('<canvas id="barChart"></canvas>');
-
-                var reg_id, dpt_id, com_id;
-
-                switch (origin) {
-                    case 'reg':
-                        reg_id = $('#reg').find(":selected").attr("id");
-                        dpt_id = 'dpt_default';
-                        com_id = 'commune_default';
-                        break;
-                    case 'dpt':
-                        reg_id = $('#reg').find(":selected").attr("id");
-                        dpt_id = $('#dpt').find(":selected").attr("id");
-                        com_id = 'commune_default';
-                        break;
-                    case 'com':
-                        reg_id = $('#reg').find(":selected").attr("id");
-                        dpt_id = $('#dpt').find(":selected").attr("id");
-                        com_id = $('#com').find(":selected").attr("id");
-                        break;
-                    case 'base':
-                        reg_id = 'reg_default';
-                        dpt_id = 'dpt_default';
-                        com_id = 'commune_default';
-                        break;
-                }
-
-                var today = new Date();
-                var dateSecondTour = new Date("2017-05-07");
-                var baseUrl = dateSecondTour < today ? baseUrlForT2 : baseUrlForT1;
-=======
             var changeData = function(url) {
->>>>>>> b4feeb0af2128ad53cba46649ab4960f03cd2b5c
                 var context = document.getElementById("pieChart").getContext('2d');
                 var pieLabels = ["Abstentions", "Blancs", "Nuls", "Exprimés"];
                 var couleursMentions = ["#f14d35", "#67b64d", "#ffd036", "#0075b3"];
@@ -396,6 +352,13 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                                     }
                                 }
                             });
+
+                            $('table').DataTable({
+                                "paging": false,
+                                "language" : {
+                                    "url" : "//cdn.datatables.net/plug-ins/1.10.15/i18n/French.json"
+                                }
+                            });
                         }
                         else {
                             $("#modalNoData").modal("show");
@@ -425,181 +388,6 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                     changeData(baseUrl + "FE.xml");
                 } else {
                     if (dpt_id == "dpt_default") {
-<<<<<<< HEAD
-                        $.ajax({
-                            type: "POST",
-                            url: 'ajax.php',
-                            data: {
-                                'action': 'getInfos',
-                                'url': baseUrl + reg_id.substr(4) + "/" + reg_id.substr(4) + ".xml"
-                            },
-                            success: function(data) {
-                                var xmlDoc = $.parseXML(data);
-                                var xml = $(xmlDoc);
-                                var pieValues = [xml.find("Abstentions").find("Nombre").text(), xml.find("Blancs").find("Nombre").text(), xml.find("Nuls").find("Nombre").text(), xml.find("Exprimes").find("Nombre").text()];
-
-                                getGeneralStats(xml);
-                                
-                                var myDoughnut = new Chart(context, {
-                                    type: 'pie',
-                                    data: {
-                                        labels: pieLabels,
-                                        datasets: [{
-                                            backgroundColor: couleursMentions,
-                                            borderColor: couleursMentions,
-                                            data: pieValues
-                                        }]
-                                    }
-                                });
-                                var candidatsNames = [];
-                                var candidatsScores = [];
-                                xml.find("Resultats").find("Candidats").find("Candidat").each(function(index) {
-                                    candidatsNames.push($(this).find("PrenomPsn").text() + " " + $(this).find("NomPsn").text());
-                                    candidatsScores.push($(this).find("NbVoix").text());
-                                    $("#resultatsTBody").append("<tr><td>" + $(this).find("PrenomPsn").text() + " " + $(this).find("NomPsn").text() + "</td><td>" + $(this).find("RapportExprime").text() + "%</td><td>" + $(this).find("NbVoix").text() + "</td></tr>");
-                                });
-                                var myBarChart = new Chart(ctxt, {
-                                    type: 'bar',
-                                    data: {
-                                        labels: candidatsNames,
-                                        datasets: [{
-                                            backgroundColor: couleursCandidats,
-                                            data: candidatsScores
-                                        }]
-                                    },
-                                    options: {
-                                        legend: {
-                                            display: false
-                                        },
-                                        tooltips: {
-                                            callbacks: {
-                                                label: function(tooltipItem) {
-                                                    return tooltipItem.yLabel;
-                                                }
-                                            }
-                                        }
-                                    }
-                                });
-                            }
-                        });
-                    }
-                    else {
-                        if (com_id == "commune_default") {
-                            $.ajax({
-                                type: "POST",
-                                url: 'ajax.php',
-                                data: {
-                                    'action': 'getInfos',
-                                    'url': baseUrl + reg_id.substr(4) + "/" + dpt_id.substr(4) + "/" + dpt_id.substr(4) + ".xml"
-                                },
-                                success: function(data) {
-                                    var xmlDoc = $.parseXML(data);
-                                    var xml = $(xmlDoc);
-                                    var pieValues = [xml.find("Abstentions").find("Nombre").text(), xml.find("Blancs").find("Nombre").text(), xml.find("Nuls").find("Nombre").text(), xml.find("Exprimes").find("Nombre").text()];
-
-                                    getGeneralStats(xml);
-
-                                    var myDoughnut = new Chart(context, {
-                                        type: 'pie',
-                                        data: {
-                                            labels: pieLabels,
-                                            datasets: [{
-                                                backgroundColor: couleursMentions,
-                                                borderColor: couleursMentions,
-                                                data: pieValues
-                                            }]
-                                        }
-                                    });
-                                    var candidatsNames = [];
-                                    var candidatsScores = [];
-                                    xml.find("Resultats").find("Candidats").find("Candidat").each(function(index) {
-                                        candidatsNames.push($(this).find("PrenomPsn").text() + " " + $(this).find("NomPsn").text());
-                                        candidatsScores.push($(this).find("NbVoix").text());
-                                        $("#resultatsTBody").append("<tr><td>" + $(this).find("PrenomPsn").text() + " " + $(this).find("NomPsn").text() + "</td><td>" + $(this).find("RapportExprime").text() + "%</td><td>" + $(this).find("NbVoix").text() + "</td></tr>");
-                                    });
-                                    var myBarChart = new Chart(ctxt, {
-                                        type: 'bar',
-                                        data: {
-                                            labels: candidatsNames,
-                                            datasets: [{
-                                                backgroundColor: couleursCandidats,
-                                                data: candidatsScores
-                                            }]
-                                        },
-                                        options: {
-                                            legend: {
-                                                display: false
-                                            },
-                                            tooltips: {
-                                                callbacks: {
-                                                    label: function(tooltipItem) {
-                                                        return tooltipItem.yLabel;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                        else {
-                            $.ajax({
-                                type: "POST",
-                                url: 'ajax.php',
-                                data: {
-                                    'action': 'getInfos',
-                                    'url': baseUrl + reg_id.substr(4) + "/" + dpt_id.substr(4) + "/" + com_id.substr(4) + ".xml"
-                                },
-                                success: function(data) {
-                                    var xmlDoc = $.parseXML(data);
-                                    var xml = $(xmlDoc);
-                                    var pieValues = [xml.find("Abstentions").find("Nombre").text(), xml.find("Blancs").find("Nombre").text(), xml.find("Nuls").find("Nombre").text(), xml.find("Exprimes").find("Nombre").text()];
-
-                                    getGeneralStats(xml);
-
-                                    var myDoughnut = new Chart(context, {
-                                        type: 'pie',
-                                        data: {
-                                            labels: pieLabels,
-                                            datasets: [{
-                                                backgroundColor: couleursMentions,
-                                                borderColor: couleursMentions,
-                                                data: pieValues
-                                            }]
-                                        }
-                                    });
-                                    var candidatsNames = [];
-                                    var candidatsScores = [];
-                                    xml.find("Resultats").find("Candidats").find("Candidat").each(function(index) {
-                                        candidatsNames.push($(this).find("PrenomPsn").text() + " " + $(this).find("NomPsn").text());
-                                        candidatsScores.push($(this).find("NbVoix").text());
-                                        $("#resultatsTBody").append("<tr><td>" + $(this).find("PrenomPsn").text() + " " + $(this).find("NomPsn").text() + "</td><td>" + $(this).find("RapportExprime").text() + "%</td><td>" + $(this).find("NbVoix").text() + "</td></tr>");
-                                    });
-                                    var myBarChart = new Chart(ctxt, {
-                                        type: 'bar',
-                                        data: {
-                                            labels: candidatsNames,
-                                            datasets: [{
-                                                backgroundColor: couleursCandidats,
-                                                data: candidatsScores
-                                            }]
-                                        },
-                                        options: {
-                                            legend: {
-                                                display: false
-                                            },
-                                            tooltips: {
-                                                callbacks: {
-                                                    label: function(tooltipItem) {
-                                                        return tooltipItem.yLabel;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    });
-                                }
-                            });
-=======
                         changeData(baseUrl + reg_id.substr(4) + "/" + reg_id.substr(4) + ".xml");
                     }
                     else {
@@ -608,28 +396,27 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                         }
                         else {
                             changeData(baseUrl + reg_id.substr(4) + "/" + dpt_id.substr(4) + "/" + com_id.substr(4) + ".xml");
->>>>>>> b4feeb0af2128ad53cba46649ab4960f03cd2b5c
                         }
                     }
                 }
+            }
 
-                function getGeneralStats(xml) {
-                    var inscrits = parseInt(xml.find("Inscrits").find("Nombre").text());
-                    $('#insc').html(inscrits);
+            var getGeneralStats = function(xml) {
+                var inscrits = parseInt(xml.find("Inscrits").find("Nombre").text());
+                $('#insc').html(inscrits);
 
-                    var votants = parseInt(xml.find("Exprimes").find("Nombre").text());
-                    $('#votes').html(getVotePercent(votants, inscrits));
+                var votants = parseInt(xml.find("Exprimes").find("Nombre").text());
+                $('#votes').html(getVotePercent(votants, inscrits));
 
-                    var nuls = parseInt(xml.find("Nuls").find("Nombre").text()) + parseInt(xml.find("Blancs").find("Nombre").text());
-                    $('#nuls').html(getVotePercent(nuls, inscrits));
+                var nuls = parseInt(xml.find("Nuls").find("Nombre").text()) + parseInt(xml.find("Blancs").find("Nombre").text());
+                $('#nuls').html(getVotePercent(nuls, inscrits));
 
-                    var abst = parseInt(xml.find("Abstentions").find("Nombre").text());
-                    $('#abst').html(getVotePercent(abst, inscrits));
+                var abst = parseInt(xml.find("Abstentions").find("Nombre").text());
+                $('#abst').html(getVotePercent(abst, inscrits));
 
-                    function getVotePercent(vote, inscrits) {
-                        var result = vote + ' (<em>' + Math.round(vote/inscrits*100,2) + '%</em>)';
-                        return result;
-                    }
+                function getVotePercent(vote, inscrits) {
+                    var result = vote + ' (<em>' + Math.round(vote/inscrits*100,2) + '%</em>)';
+                    return result;
                 }
             }
         </script>
