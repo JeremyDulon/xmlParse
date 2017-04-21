@@ -287,6 +287,7 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
             });
             var baseUrlForT1 = 'http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT1/';
             var baseUrlForT2 = 'http://www.interieur.gouv.fr/avotreservice/elections/telechargements/EssaiPR2017/resultatsT2/';
+            var timeOutId = null;
         </script>
         <script>
             var changeData = function(url) {
@@ -351,13 +352,16 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                         else {
                             $("#modalNoData").modal("show");
                         }
+                        timeOutId = setTimeout(getAndDisplay, 300000);
                     },
                     error: function(err) {
                         $("#modalNoData").modal("show");
+                        timeOutId = setTimeout(getAndDisplay, 300000);
                     }
                 });
             }
             var getAndDisplay = function() {
+                clearTimeout(timeOutId);
                 $('#pieChartContainer').empty();
                 $('#pieChartContainer').html('<canvas id="pieChart"></canvas>');
                 $('#barChartContainer').empty();
