@@ -236,13 +236,24 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                 });
 
                 $('#btnFE').on('click', function () {
-                    $('#reg').empty();
-                    $('#dpt').empty();
-                    $('#com').empty();
-                    var opt = "<option id='reg_default'>Choisir une région</option>";
-                    $('#reg').append(opt);
-                    $('#dpt').append(opt);
-                    $('#com').append(opt);
+                    $('#reg option[selected="selected"]').each(
+                        function() {
+                            $(this).removeAttr('selected');
+                        }
+                    );
+                    $('#reg option:first').attr('selected','selected');
+                    $('#dpt option[selected="selected"]').each(
+                        function() {
+                            $(this).removeAttr('selected');
+                        }
+                    );
+                    $('#dpt option:first').attr('selected','selected');
+                    $('#com option[selected="selected"]').each(
+                        function() {
+                            $(this).removeAttr('selected');
+                        }
+                    );
+                    $('#com option:first').attr('selected','selected');
                     $('#reg').prop('disabled',false);
                     $('#dpt').prop('disabled',true);
                     $('#com').prop('disabled',true);
@@ -278,10 +289,8 @@ $data = getData('http://www.interieur.gouv.fr/avotreservice/elections/telecharge
                 var pieLabels = ["Abstentions", "Blancs", "Nuls", "Exprimés"];
                 var couleursMentions = ["#f14d35", "#67b64d", "#ffd036", "#0075b3"];
                 var ctxt = document.getElementById("barChart").getContext('2d');
-                var candidats = ["Benoît HAMON", "Emmanuel MACRON", "François ASSELINEAU", "François FILLON", "Jacques CHEMINADE", "Jean LASSALLE", "Jean Luc MÉLENCHON", "Marine LE PEN", "Nathalie ARTHAUD", "Nicolas DUPONT AIGNAN", "Philippe POUTOU"];
                 var couleursCandidats = ["#67b64d","#f14d35","#553c86","#0075b3","#f66b2d","#219d97","#f12736","#1b4e92","#ffd036","#a6336e","#99a83e"];
                 $("#resultatsTBody").empty();
-                console.log(reg_id + " - " + dpt_id + " - " + com_id);
                 if (reg_id == "reg_default"){
                     $.ajax({
                         type: "POST",
